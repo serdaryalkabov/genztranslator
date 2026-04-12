@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brainrot Translator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="icon" type="image/x-icon" href="brainrot-favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #111111;
+    --bg3: #1a1a1a;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+    --text-primary: #f0f0f0;
+    --text-secondary: #666;
+    --text-tertiary: #444;
+    --accent: #e8ff5a;
+    --accent-dim: rgba(232,255,90,0.08);
+    --accent-dim2: rgba(232,255,90,0.15);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
+    --font-display: 'Manrope', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Subtle grid background */
+  /*body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+*/
+  /* Glow orb */
+  /*body::after {
+    content: '';
+    position: fixed;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(232,255,90,0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }*/
+
+  /* NAV */
+  nav {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+
+  .nav-badge {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* MAIN */
+  main {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 80px 24px 60px;
+    max-width: 760px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 60px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .eyebrow {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: inline-block;
+  }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 6vw, 54px);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+  }
+
+  h1 span {
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  /* CARD */
+  .card {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    animation: fadeUp 0.6s 0.15s ease both;
+    transition: border-color 0.3s;
+  }
+
+  .card:focus-within {
+    border-color: var(--border-hover);
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    padding: 0 4px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 16px 20px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+    letter-spacing: 0.01em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: -1px;
+  }
+
+  .tab svg { opacity: 0.5; transition: opacity 0.2s; }
+
+  .tab:hover { color: var(--text-secondary); }
+  .tab:hover svg { opacity: 0.7; }
+
+  .tab.active {
+    color: var(--text-primary);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab.active svg { opacity: 1; }
+
+  /* PANELS */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  textarea {
+    width: 100%;
+    min-height: 220px;
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.75;
+    color: var(--text-primary);
+    padding: 24px;
+    display: block;
+  }
+
+  textarea::placeholder { color: var(--text-tertiary); }
+
+  /* UPLOAD ZONE */
+  .upload-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 220px;
+    cursor: pointer;
+    padding: 40px 24px;
+    transition: background 0.2s;
+  }
+
+  .upload-zone:hover { background: rgba(255,255,255,0.02); }
+  .upload-zone.dragover { background: var(--accent-dim); }
+  .upload-zone.has-file { background: var(--accent-dim); }
+
+  .upload-icon-wrap {
+    width: 52px;
+    height: 52px;
+    border: 1px solid var(--border-hover);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .upload-zone:hover .upload-icon-wrap,
+  .upload-zone.has-file .upload-icon-wrap {
+    border-color: var(--accent);
+    background: var(--accent-dim2);
+  }
+
+  .upload-label {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: color 0.2s;
+    text-align: center;
+  }
+
+  .upload-zone:hover .upload-label,
+  .upload-zone.has-file .upload-label {
+    color: var(--text-primary);
+  }
+
+  .upload-hint {
+    font-size: 12px;
+    color: var(--text-tertiary);
+  }
+
+  input[type=file] { display: none; }
+
+  /* FOOTER BAR */
+  .card-footer {
+    border-top: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .char-count {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-family: var(--font-body);
+  }
+
+  /* API KEY input */
+  .api-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .api-input-wrap label {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    font-family: var(--font-body);
+  }
+
+  .api-input {
+    flex: 1;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 12px;
+    font-size: 12px;
+    font-family: var(--font-body);
+    color: var(--text-secondary);
+    outline: none;
+    transition: border-color 0.2s;
+    min-width: 0;
+  }
+
+  .api-input::placeholder { color: var(--text-tertiary); }
+  .api-input:focus { border-color: var(--border-hover); color: var(--text-primary); }
+
+  /* SUBMIT BUTTON */
+  .btn-wrap {
+    margin-top: 20px;
+    animation: fadeUp 0.6s 0.25s ease both;
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 16px 32px;
+    background: var(--accent);
+    color: #0a0a0a;
+    border: none;
+    border-radius: var(--radius-lg);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); opacity: 1; }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+  /* SPINNER */
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-top-color: #0a0a0a;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ERROR */
+  .err {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 80, 80, 0.08);
+    border: 1px solid rgba(255, 80, 80, 0.15);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    color: #ff6b6b;
+    display: none;
+    animation: fadeUp 0.3s ease both;
+    font-family: var(--font-body);
+  }
+
+  /* OUTPUT */
+  .output-wrap {
+    margin-top: 24px;
+    display: none;
+    animation: fadeUp 0.5s ease both;
+    width: 100%;
+  }
+
+  .output-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+  }
+
+  .output-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .output-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
+
+  .output-text {
+    padding: 28px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+  }
+
+  .output-footer {
+    border-top: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .output-meta {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-family: var(--font-body);
+  }
+
+  .copy-btn {
+    padding: 7px 16px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .copy-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .copy-btn.copied {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-family: var(--font-body);
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #2a2a2a; }
+
+  @media (max-width: 600px) {
+    nav { padding: 16px 20px; }
+    main { padding: 48px 16px 40px; }
+    .card-footer { flex-wrap: wrap; }
+    .api-input-wrap { flex: 0 0 100%; order: -1; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <!-- <div class="logo-dot"></div> -->
+    genztranslator
+  </div>
+  <!-- <span class="nav-badge">Powered by Claude</span> -->
+</nav>
+
+<main>
+  <div class="header">
+    <!-- <span class="eyebrow">Have fun and</span> -->
+    <h1>Make it <span>stick.</span></h1>
+    <p class="subtitle">Paste your boring lecture or upload a file. We'll translate it into chronically-online Gen-Z speak that actually stays in your brain.</p>
+  </div>
+
+  <div class="card" id="main-card">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('text', this)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <rect x="1" y="2" width="12" height="1.5" rx="0.75" fill="currentColor"/>
+          <rect x="1" y="5.5" width="9" height="1.5" rx="0.75" fill="currentColor"/>
+          <rect x="1" y="9" width="11" height="1.5" rx="0.75" fill="currentColor"/>
+        </svg>
+        Paste text
+      </button>
+      <button class="tab" onclick="switchTab('file', this)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M3 1.5h5.5L11 4v8.5a.5.5 0 01-.5.5h-7a.5.5 0 01-.5-.5v-11a.5.5 0 01.5-.5z" stroke="currentColor" stroke-width="1" fill="none"/>
+          <path d="M8.5 1.5V4H11" stroke="currentColor" stroke-width="1" fill="none"/>
+        </svg>
+        Upload file
+      </button>
+    </div>
+
+    <div class="panel active" id="panel-text">
+      <textarea
+        id="text-input"
+        placeholder="Paste your lecture notes, article, script — whatever boring thing you're trying to remember..."
+        oninput="updateCharCount()"
+      ></textarea>
+    </div>
+
+    <div class="panel" id="panel-file">
+      <div class="upload-zone" id="drop-zone"
+        onclick="document.getElementById('file-input').click()"
+        ondragover="handleDragOver(event)"
+        ondragleave="handleDragLeave(event)"
+        ondrop="handleDrop(event)"
+      >
+        <div class="upload-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <path d="M11 14V4M11 4L7 8M11 4L15 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 17h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="upload-label" id="file-label">Drop your file here, or click to browse</div>
+          <div class="upload-hint">PDF, DOCX, or TXT — up to 20 pages</div>
+        </div>
+      </div>
+      <input type="file" id="file-input" accept=".pdf,.docx,.txt" onchange="handleFileInput(event)">
+    </div>
+
+    <div class="card-footer">
+     <!--  <div class="api-input-wrap">
+        <label for="api-key">API key</label>
+        <input
+          type="password"
+          id="api-key"
+          class="api-input"
+          placeholder="sk-ant-..."
+          autocomplete="off"
+        >
+      </div> -->
+      <span class="char-count" id="char-count">0 chars</span>
+    </div>
+  </div>
+
+  <div class="btn-wrap">
+    <button class="btn" id="roast-btn" onclick="roast()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M8 1.5C8 1.5 9.5 4 9 6.5C11 5 12.5 3 12.5 3C12.5 3 13.5 6 12 8C13 8 14 7.5 14 7.5C14 7.5 14 11 11 13C9.5 14 7 14.5 5 13.5C3 12.5 2 10.5 2 8.5C2 6.5 3 5 3 5C3 5 4 6.5 5 7C4.5 5.5 5 3 8 1.5Z" fill="currentColor"/>
+      </svg>
+      Translate to brainrot
+    </button>
+  </div>
+
+  <div class="err" id="err-msg"></div>
+
+  <div class="output-wrap" id="output-wrap">
+    <div class="output-label">Output</div>
+    <div class="output-card">
+      <div class="output-text" id="output-text"></div>
+      <div class="output-footer">
+        <span class="output-meta" id="output-meta"></span>
+        <button class="copy-btn" id="copy-btn" onclick="copyOutput()">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <rect x="4" y="4" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1"/>
+            <path d="M1 9V2a1 1 0 011-1h7" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+          </svg>
+          Copy
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  hope this will help you lil bruh
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script>
+let activeTab = 'text';
+let fileText = '';
+let pdfFile = null;
+
+function switchTab(tab, el) {
+  activeTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+  updateCharCount();
+}
+
+function updateCharCount() {
+  const len = document.getElementById('text-input').value.length;
+  document.getElementById('char-count').textContent = len.toLocaleString() + ' chars';
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.add('dragover');
+}
+function handleDragLeave(e) {
+  document.getElementById('drop-zone').classList.remove('dragover');
+}
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) processFile(file);
+}
+function handleFileInput(e) {
+  const file = e.target.files[0];
+  if (file) processFile(file);
+}
+
+async function processFile(file) {
+  const zone = document.getElementById('drop-zone');
+  const label = document.getElementById('file-label');
+  label.textContent = 'Reading ' + file.name + '...';
+  zone.classList.remove('has-file');
+
+  try {
+    if (file.name.endsWith('.txt')) {
+      fileText = await file.text();
+    } else if (file.name.endsWith('.docx')) {
+      const buf = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer: buf });
+      fileText = result.value;
+    } else if (file.name.endsWith('.pdf')) {
+      fileText = '__pdf__';
+      pdfFile = file;
+    } else {
+      throw new Error('Unsupported file type');
+    }
+    zone.classList.add('has-file');
+    label.textContent = file.name;
+  } catch (e) {
+    label.textContent = 'Error reading file. Try again.';
+    showErr(e.message);
+  }
+}
+
+async function extractPdfText(file) {
+  if (!window.pdfjsLib) {
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  let text = '';
+  for (let i = 1; i <= Math.min(pdf.numPages, 20); i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(s => s.str).join(' ') + '\n';
+  }
+  return text;
+}
+
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+
+function showErr(msg) {
+  const el = document.getElementById('err-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideErr() {
+  document.getElementById('err-msg').style.display = 'none';
+}
+
+async function roast() {
+  hideErr();
+
+  let content = '';
+  if (activeTab === 'text') {
+    content = document.getElementById('text-input').value.trim();
+  } else {
+    if (fileText === '__pdf__') {
+      try { content = await extractPdfText(pdfFile); }
+      catch(e) { showErr('Could not read PDF. Try copy-pasting the text instead.'); return; }
+    } else {
+      content = fileText;
+    }
+  }
+
+  if (!content || content.length < 20) {
+    showErr('Give me something to work with — paste some text or upload a file first.');
+    return;
+  }
+
+  const btn = document.getElementById('roast-btn');
+  const outputWrap = document.getElementById('output-wrap');
+  const outputText = document.getElementById('output-text');
+  const outputMeta = document.getElementById('output-meta');
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div>Reading...';
+  outputWrap.style.display = 'none';
+
+  const truncated = content.slice(0, 4000);
+  const startTime = Date.now();
+
+  try {
+    const resp = await fetch('https://brainrot.yalkabovserdar07.workers.dev', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1200,
+        system: `You are a chronically online 22-year-old who has spent 10,000 hours on Reddit, Twitter, and TikTok. You are a bit mean. You punch down on relatable behaviors. You never try to be helpful. You roast the user. Your humor is specific, uncomfortable, and true. Never be wholesome. Never explain the joke.
+
+Your task: rewrite the user's text in your voice — casual, first-person, Gen-Z style, as if you're explaining it to your group chat at 2am. Make it memorable, funny, and a little mean. Keep all the actual information but make it feel like gossip or a hot take. Use internet slang naturally but don't overdo it. Be concise.`,
+        messages: [{ role: 'user', content: `Rewrite this in your style:\n\n${truncated}` }]
+      })
+    });
+
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error.message);
+
+    const text = data.content?.find(b => b.type === 'text')?.text || 'something went wrong bestie';
+    const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+
+    outputText.textContent = text;
+    outputMeta.textContent = `${text.length.toLocaleString()} chars · ${elapsed}s`;
+    outputWrap.style.display = 'block';
+    outputWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  } catch(e) {
+    showErr('API error: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M8 1.5C8 1.5 9.5 4 9 6.5C11 5 12.5 3 12.5 3C12.5 3 13.5 6 12 8C13 8 14 7.5 14 7.5C14 7.5 14 11 11 13C9.5 14 7 14.5 5 13.5C3 12.5 2 10.5 2 8.5C2 6.5 3 5 3 5C3 5 4 6.5 5 7C4.5 5.5 5 3 8 1.5Z" fill="currentColor"/>
+      </svg>
+      Translate to brainrot`;
+  }
+}
+
+async function copyOutput() {
+  const text = document.getElementById('output-text').textContent;
+  const btn = document.getElementById('copy-btn');
+  await navigator.clipboard.writeText(text);
+  btn.classList.add('copied');
+  btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5L5 9.5L11 3.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Copied`;
+  setTimeout(() => {
+    btn.classList.remove('copied');
+    btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="4" y="4" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1"/><path d="M1 9V2a1 1 0 011-1h7" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>Copy`;
+  }, 2000);
+}
+</script>
+</body>
+</html>
